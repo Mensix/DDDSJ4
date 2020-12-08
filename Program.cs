@@ -11,41 +11,38 @@ namespace DDDSJ4
     {
         static void Main(string[] args)
         {
-            if (args.Length != 1)
+            if (args.Length != 2)
             {
                 Console.WriteLine("! No input file was specified");
                 Environment.Exit(0);
             }
 
-            List<string> inputFileContent = new();
-            List<ObjVertex> vertices = new();
-            List<ObjFace> faces = new();
-            string outputXml;
+            List<string> objFileContent = new();
+            List<string> mtlFileContent = new();
 
             try
             {
-                inputFileContent = File.ReadAllLines(args[0]).ToList();
+                objFileContent = File.ReadAllLines(args[0]).ToList();
+                mtlFileContent = File.ReadAllLines(args[1]).ToList();
                 Console.WriteLine("! Reading file");
             }
             catch (FileNotFoundException)
             {
-                Console.WriteLine($"! File {args[0]} was not found");
+                Console.WriteLine($"! File {args[0]} or/and {args[1]} was not found");
                 Environment.Exit(0);
             }
             catch (FileLoadException)
             {
-                Console.WriteLine($"! Unable to load {args[0]} file");
+                Console.WriteLine($"! Unable to load {args[0]} or/and {args[1]} file");
                 Environment.Exit(0);
             }
 
-            ParseObj parser = new();
-            Console.WriteLine("! Parsing file");
-            (vertices, faces) = parser.Parse(inputFileContent);
-            Console.WriteLine("! Generating XML");
-            outputXml = parser.Generate(vertices, faces);
-            Console.WriteLine("! Writing XML");
-            File.WriteAllText($"{args[0].Split(".")[0]}.xml", outputXml);
-            Console.WriteLine("! Output file succesfully written");
+            ParseObj parseObj = new();
+            ParseMtl parseMtl = new();
+            List<MtlMaterial> materials = parseMtl.Parse(mtlFileContent);
+
+            List<ObjBatch> batch = parseObj.Parse(objFileContent, materials);
+            File.WriteAllText("diamond.xml", parseObj.Generate(batch));
         }
     }
 }

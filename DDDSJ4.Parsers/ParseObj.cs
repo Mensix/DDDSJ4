@@ -7,10 +7,11 @@ using DDDSJ4.Interfaces;
 
 namespace DDDSJ4.Parsers
 {
-    public class ParseObj : IParse
+    public class ParseObj
     {
-        public (List<ObjVertex>, List<ObjFace>) Parse(List<string> input)
+        public List<ObjBatch> Parse(List<string> input, List<MtlMaterial> materials)
         {
+            List<ObjBatch> batches = new();
             List<ObjVertex> vertices = new();
             List<ObjFace> faces = new();
             int index = 1;
@@ -19,17 +20,7 @@ namespace DDDSJ4.Parsers
             {
                 List<string> line = input[i].Split(" ").ToList();
 
-                if (line[0].StartsWith("f") && line.Count != 4)
-                {
-                    Console.WriteLine($"! .obj file must contain three values in vertex and face definition, found at line {i + 1}, this may cause not desired 3dmodel rendering in-game");
-                }
-
-                if (line[0].StartsWith("vn"))
-                {
-                    Console.WriteLine($"! vn definition was found in .obj file at line {i + 1}, this may cause not desired 3dmodel rendering in-game");
-                }
-
-                if (line[0].StartsWith("v") && line[0].EndsWith("v"))
+                if (line[0].StartsWith("v"))
                 {
                     vertices.Add(new ObjVertex
                     {
@@ -40,9 +31,21 @@ namespace DDDSJ4.Parsers
                     });
                     index++;
                 }
-                else if (line[0].StartsWith("f"))
+
+                if (line[0].StartsWith("usemtl"))
                 {
-                    faces.Add(new ObjFace
+                    batches.Add(new ObjBatch
+                    {
+                        Id = line[1],
+                        Diffuse = materials.First(x => x.Name == line[1]).Diffuse,
+                        Vertices = new List<ObjVertex>(),
+                        Faces = new List<ObjFace>()
+                    });
+                }
+
+                if (line[0].StartsWith("f"))
+                {
+                    batches[^1].Faces.Add(new ObjFace
                     {
                         V1 = line[1],
                         V2 = line[2],
@@ -51,25 +54,50 @@ namespace DDDSJ4.Parsers
                 }
             }
 
-            return (vertices, faces);
+            for (int i = 0; i < batches.Count; i++)
+            {
+                for (int j = 0; j < batches[i].Faces.Count; j++)
+                {
+                    batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V1));
+                    batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V2));
+                    batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V3));
+                }
+            }
+
+            for (int i = 0; i < batches.Count; i++)
+            {
+                batches[i].Vertices = batches[i].Vertices.Distinct().ToList();
+            }
+
+            return batches;
         }
 
-        public string Generate(List<ObjVertex> vertices, List<ObjFace> faces)
+        public string Generate(List<ObjBatch> batch)
         {
-            StringBuilder sb = new StringBuilder("<3dmodel id=\"model\">\n\t<batch id=\"batch\" texture1=\"Textures\\concrete5.png\" material=\"Materials\\material1.xml\" fvf=\"322\" order=\"0\">");
+            StringBuilder stringBuilder = new(@"<3dmodel id=""model"">");
 
-            for (int i = 0; i < vertices.Count; i++)
+            for (int i = 0; i < batch.Count; i++)
             {
-                sb.Append("\n\t\t<vertex id=\"").Append(vertices[i].Id).Append("\" x=\"").Append(vertices[i].X).Append("\" y=\"").Append(vertices[i].Y).Append("\" z=\"").Append(vertices[i].Z).Append("\" diffuse=\"0xFFFFFF\" />");
+                stringBuilder.Append(@"<batch id=""").Append(batch[i].Id).Append(@""" texture1=""Textures\concrete5.png"" material=""Materials\material1.xml"" fvf=""322"" order=""0"">").Append("\n");
+
+                for (int j = 0; j < batch[i].Vertices.Count; j++)
+                {
+                    ObjVertex currentVertex = batch[i].Vertices[j];
+                    stringBuilder.Append(@"<vertex id=""").Append(currentVertex.Id).Append(@""" x=""").Append(currentVertex.X).Append(@""" y=""").Append(currentVertex.Y).Append(@""" z=""").Append(currentVertex.Z).Append(@""" diffuse=""").Append(batch[i].Diffuse).Append(@""" />").Append("\n");
+                }
+
+                for (int j = 0; j < batch[i].Faces.Count; j++)
+                {
+                    ObjFace currentFace = batch[i].Faces[j];
+                    stringBuilder.Append(@"<face v1=""").Append(currentFace.V1).Append(@""" v2=""").Append(currentFace.V2).Append(@""" v3=""").Append(currentFace.V3).Append(@""" />").Append("\n");
+                }
+
+                stringBuilder.Append(@"</batch>").Append("\n");
             }
 
-            for (int i = 0; i < faces.Count; i++)
-            {
-                sb.Append("\n\t\t<face v1=\"").Append(faces[i].V1).Append("\" v2=\"").Append(faces[i].V2).Append("\" v3=\"").Append(faces[i].V3).Append("\" />");
-            }
+            stringBuilder.Append(@"</3dmodel>").Append("\n").Append(@"<3dmodel-instance id=""model"" refx=""inrun"" refy=""inrun-top"" x=""0"" y=""0"" z=""0""/>");
 
-            sb.Append("\n\t</batch>\n</3dmodel>\n<3dmodel-instance id=\"model\" x=\"0\" y=\"0\" z=\"0\" refx=\"inrun\" refy=\"terrain\" />");
-            return sb.ToString();
+            return stringBuilder.ToString();
         }
     }
 }
