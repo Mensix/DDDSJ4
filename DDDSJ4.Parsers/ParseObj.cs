@@ -74,7 +74,7 @@ namespace DDDSJ4.Parsers
 
                         for (int k = 0; k < firstFace.Length; k++)
                         {
-                            batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == firstFace[k]));
+                            batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == firstFace[k])).;
                             batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == secondFace[k]));
                             batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == thirdFace[k]));
                         }
