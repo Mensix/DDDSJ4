@@ -5,7 +5,7 @@ namespace DDDSJ4.Interfaces
 {
     public interface IParse
     {
-        (List<ObjVertex>, List<ObjFace>) Parse(List<string> input);
-        string Generate(List<ObjVertex> vertices, List<ObjFace> faces);
+        List<ObjBatch> Parse(List<string> input, List<MtlMaterial> materials);
+        string Generate(List<ObjBatch> batch);
     }
 }

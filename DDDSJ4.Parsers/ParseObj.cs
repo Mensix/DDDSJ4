@@ -7,7 +7,7 @@ using DDDSJ4.Interfaces;
 
 namespace DDDSJ4.Parsers
 {
-    public class ParseObj
+    public class ParseObj : IParse
     {
         public List<ObjBatch> Parse(List<string> input, List<MtlMaterial> materials)
         {
