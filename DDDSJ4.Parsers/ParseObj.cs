@@ -37,7 +37,7 @@ namespace DDDSJ4.Parsers
                     batches.Add(new ObjBatch
                     {
                         Id = line[1],
-                        Diffuse = materials.First(x => x.Name == line[1]).Diffuse,
+                        Diffuse = materials.Where(x => x.Name == line[1]).ToList().Count > 0 ? materials.First(x => x.Name == line[1]).Diffuse : "0xFFFFFF",
                         Vertices = new List<ObjVertex>(),
                         Faces = new List<ObjFace>()
                     });
@@ -74,7 +74,7 @@ namespace DDDSJ4.Parsers
 
                         for (int k = 0; k < firstFace.Length; k++)
                         {
-                            batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == firstFace[k])).;
+                            batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == firstFace[k]));
                             batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == secondFace[k]));
                             batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == thirdFace[k]));
                         }
