@@ -20,7 +20,7 @@ namespace DDDSJ4.Parsers
             {
                 List<string> line = input[i].Split(" ").ToList();
 
-                if (line[0].StartsWith("v"))
+                if (line[0].StartsWith("v") && line[0].EndsWith("v"))
                 {
                     vertices.Add(new ObjVertex
                     {
@@ -58,9 +58,27 @@ namespace DDDSJ4.Parsers
             {
                 for (int j = 0; j < batches[i].Faces.Count; j++)
                 {
-                    batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V1));
-                    batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V2));
-                    batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V3));
+                    bool isTripleFace = batches[i].Faces[j].V1.Contains("/");
+
+                    if (!isTripleFace)
+                    {
+                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V1));
+                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V2));
+                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V3));
+                    }
+                    else
+                    {
+                        string[] firstFace = batches[i].Faces[j].V1.Split("/");
+                        string[] secondFace = batches[i].Faces[j].V2.Split("/");
+                        string[] thirdFace = batches[i].Faces[j].V3.Split("/");
+
+                        for (int k = 0; k < firstFace.Length; k++)
+                        {
+                            batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == firstFace[k]));
+                            batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == secondFace[k]));
+                            batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == thirdFace[k]));
+                        }
+                    }
                 }
             }
 
@@ -75,6 +93,7 @@ namespace DDDSJ4.Parsers
         public string Generate(List<ObjBatch> batch)
         {
             StringBuilder stringBuilder = new(@"<3dmodel id=""model"">");
+            stringBuilder.Append("\n");
 
             for (int i = 0; i < batch.Count; i++)
             {
@@ -83,7 +102,10 @@ namespace DDDSJ4.Parsers
                 for (int j = 0; j < batch[i].Vertices.Count; j++)
                 {
                     ObjVertex currentVertex = batch[i].Vertices[j];
-                    stringBuilder.Append(@"<vertex id=""").Append(currentVertex.Id).Append(@""" x=""").Append(currentVertex.X).Append(@""" y=""").Append(currentVertex.Y).Append(@""" z=""").Append(currentVertex.Z).Append(@""" diffuse=""").Append(batch[i].Diffuse).Append(@""" />").Append("\n");
+                    if (currentVertex != null)
+                    {
+                        stringBuilder.Append(@"<vertex id=""").Append(currentVertex.Id).Append(@""" x=""").Append(currentVertex.X).Append(@""" y=""").Append(currentVertex.Y).Append(@""" z=""").Append(currentVertex.Z).Append(@""" diffuse=""").Append(batch[i].Diffuse).Append(@""" />").Append("\n");
+                    }
                 }
 
                 for (int j = 0; j < batch[i].Faces.Count; j++)

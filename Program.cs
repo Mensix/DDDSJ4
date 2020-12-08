@@ -42,7 +42,7 @@ namespace DDDSJ4
             List<MtlMaterial> materials = parseMtl.Parse(mtlFileContent);
 
             List<ObjBatch> batch = parseObj.Parse(objFileContent, materials);
-            File.WriteAllText("diamond.xml", parseObj.Generate(batch));
+            File.WriteAllText($"{args[0].Split(".")[0]}.xml", parseObj.Generate(batch));
         }
     }
 }
