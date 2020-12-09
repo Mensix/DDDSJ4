@@ -22,6 +22,11 @@ namespace DDDSJ4.Parsers
 
                 if (line[0].StartsWith("v") && line[0].EndsWith("v"))
                 {
+                    if (line.Count != 4)
+                    {
+                        Console.WriteLine("! Vertex definition must contain exactly three coordinates");
+                    }
+
                     vertices.Add(new ObjVertex
                     {
                         Id = index,
@@ -34,10 +39,16 @@ namespace DDDSJ4.Parsers
 
                 if (line[0].StartsWith("usemtl"))
                 {
+                    bool foundDiffuse = materials.Where(x => x.Name == line[1]).ToList().Count > 0;
+                    if (!foundDiffuse)
+                    {
+                        Console.WriteLine("! Material diffuse color wasn't found, using 0xFFFFFF color");
+                    }
+
                     batches.Add(new ObjBatch
                     {
                         Id = line[1],
-                        Diffuse = materials.Where(x => x.Name == line[1]).ToList().Count > 0 ? materials.First(x => x.Name == line[1]).Diffuse : "0xFFFFFF",
+                        Diffuse = foundDiffuse ? materials.First(x => x.Name == line[1]).Diffuse : "0xFFFFFF",
                         Vertices = new List<ObjVertex>(),
                         Faces = new List<ObjFace>()
                     });
@@ -45,6 +56,11 @@ namespace DDDSJ4.Parsers
 
                 if (line[0].StartsWith("f"))
                 {
+                    if (line.Count != 4)
+                    {
+                        Console.WriteLine("! Face definition must contain exactly three vertices identifications, triangulate your model ie. in Blender");
+                    }
+
                     batches[^1].Faces.Add(new ObjFace
                     {
                         V1 = line[1],

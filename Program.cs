@@ -22,9 +22,9 @@ namespace DDDSJ4
 
             try
             {
+                Console.WriteLine("! Reading file");
                 objFileContent = File.ReadAllLines(args[0]).ToList();
                 mtlFileContent = File.ReadAllLines(args[1]).ToList();
-                Console.WriteLine("! Reading file");
             }
             catch (FileNotFoundException)
             {
@@ -37,12 +37,17 @@ namespace DDDSJ4
                 Environment.Exit(0);
             }
 
+            Console.WriteLine("! Invoking parsers");
             ParseObj parseObj = new();
             ParseMtl parseMtl = new();
-            List<MtlMaterial> materials = parseMtl.Parse(mtlFileContent);
 
+            Console.WriteLine("! Parsing materials");
+            List<MtlMaterial> materials = parseMtl.Parse(mtlFileContent);
+            Console.WriteLine("! Parsing .obj file");
             List<ObjBatch> batch = parseObj.Parse(objFileContent, materials);
+            Console.WriteLine("! Writing XML file");
             File.WriteAllText($"{args[0].Split(".")[0]}.xml", parseObj.Generate(batch));
+            Console.WriteLine($"! XML file was written to {args[0].Split(".")[0]}.xml");
         }
     }
 }
