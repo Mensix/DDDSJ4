@@ -114,27 +114,54 @@ namespace DDDSJ4.Parsers
 
             for (int i = 0; i < batch.Count; i++)
             {
-                stringBuilder.Append(@"<batch id=""").Append(batch[i].Id).Append(@""" texture1=""Textures\concrete5.png"" material=""Materials\material1.xml"" fvf=""322"" order=""0"">").Append("\n");
+                stringBuilder
+                    .Append(@"<batch id=""")
+                    .Append(batch[i].Id)
+                    .Append(@""" texture1=""Textures\concrete5.png"" material=""Materials\material1.xml"" fvf=""322"" order=""0"">")
+                    .Append("\n");
 
                 for (int j = 0; j < batch[i].Vertices.Count; j++)
                 {
                     ObjVertex currentVertex = batch[i].Vertices[j];
                     if (currentVertex != null)
                     {
-                        stringBuilder.Append(@"<vertex id=""").Append(currentVertex.Id).Append(@""" x=""").Append(currentVertex.X).Append(@""" y=""").Append(currentVertex.Y).Append(@""" z=""").Append(currentVertex.Z).Append(@""" diffuse=""").Append(batch[i].Diffuse).Append(@""" />").Append("\n");
+                        stringBuilder
+                            .Append(@"<vertex id=""")
+                            .Append(currentVertex.Id)
+                            .Append(@""" x=""")
+                            .Append(currentVertex.X)
+                            .Append(@""" y=""")
+                            .Append(currentVertex.Y)
+                            .Append(@""" z=""")
+                            .Append(currentVertex.Z)
+                            .Append(@""" diffuse=""")
+                            .Append(batch[i].Diffuse)
+                            .Append(@""" />")
+                            .Append("\n");
                     }
                 }
 
                 for (int j = 0; j < batch[i].Faces.Count; j++)
                 {
                     ObjFace currentFace = batch[i].Faces[j];
-                    stringBuilder.Append(@"<face v1=""").Append(currentFace.V1).Append(@""" v2=""").Append(currentFace.V2).Append(@""" v3=""").Append(currentFace.V3).Append(@""" />").Append("\n");
+                    stringBuilder
+                        .Append(@"<face v1=""")
+                        .Append(currentFace.V1)
+                        .Append(@""" v2=""")
+                        .Append(currentFace.V2)
+                        .Append(@""" v3=""")
+                        .Append(currentFace.V3)
+                        .Append(@""" />")
+                        .Append("\n");
                 }
 
                 stringBuilder.Append(@"</batch>").Append("\n");
             }
 
-            stringBuilder.Append(@"</3dmodel>").Append("\n").Append(@"<3dmodel-instance id=""model"" refx=""inrun"" refy=""inrun-top"" x=""0"" y=""0"" z=""0""/>");
+            stringBuilder
+                .Append(@"</3dmodel>")
+                .Append("\n")
+                .Append(@"<3dmodel-instance id=""model"" refx=""inrun"" refy=""inrun-top"" x=""0"" y=""0"" z=""0""/>");
 
             return stringBuilder.ToString();
         }
