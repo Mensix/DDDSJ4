@@ -18,10 +18,19 @@ namespace DDDSJ4.Models
         public string Z { get; set; }
     }
 
+    public enum ObjFaceType
+    {
+        INDICE,
+        TEXTURE_COORDINATE_INDICE,
+        NORMAL_INDICE,
+        NORMAL_INDICE_WITHOUT_TEXTURE_COORDINATE_INDICES
+    }
+
     public class ObjFace
     {
         public string V1 { get; set; }
         public string V2 { get; set; }
         public string V3 { get; set; }
-    }
+        public ObjFaceType Type { get; set;}
+}
 }

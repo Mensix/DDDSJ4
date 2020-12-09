@@ -63,6 +63,7 @@ namespace DDDSJ4.Parsers
 
                     batches[^1].Faces.Add(new ObjFace
                     {
+                        Type = GetFaceType(line[1]),
                         V1 = line[1],
                         V2 = line[2],
                         V3 = line[3]
@@ -136,6 +137,39 @@ namespace DDDSJ4.Parsers
             stringBuilder.Append(@"</3dmodel>").Append("\n").Append(@"<3dmodel-instance id=""model"" refx=""inrun"" refy=""inrun-top"" x=""0"" y=""0"" z=""0""/>");
 
             return stringBuilder.ToString();
+        }
+
+        public ObjFaceType GetFaceType(string face)
+        {
+            ObjFaceType faceType = new();
+
+            if (!face.Contains("/"))
+            {
+                faceType = ObjFaceType.INDICE;
+            }
+            else
+            {
+                if (face.Contains("//"))
+                {
+                    faceType = ObjFaceType.NORMAL_INDICE_WITHOUT_TEXTURE_COORDINATE_INDICES;
+                }
+                else
+                {
+                    if (face.Contains("/"))
+                    {
+                        if (face.Split("/").Length == 2)
+                        {
+                            faceType = ObjFaceType.TEXTURE_COORDINATE_INDICE;
+                        }
+                        else
+                        {
+                            faceType = ObjFaceType.NORMAL_INDICE;
+                        }
+                    }
+                }
+            }
+
+            return faceType;
         }
     }
 }

@@ -7,5 +7,6 @@ namespace DDDSJ4.Interfaces
     {
         List<ObjBatch> Parse(List<string> input, List<MtlMaterial> materials);
         string Generate(List<ObjBatch> batch);
+        ObjFaceType GetFaceType(string face);
     }
 }
