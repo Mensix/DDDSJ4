@@ -115,6 +115,7 @@ namespace DDDSJ4.Parsers
             for (int i = 0; i < batch.Count; i++)
             {
                 stringBuilder
+                    .Append("\t")
                     .Append(@"<batch id=""")
                     .Append(batch[i].Id)
                     .Append(@""" texture1=""Textures\concrete5.png"" material=""Materials\material1.xml"" fvf=""322"" order=""0"">")
@@ -126,6 +127,7 @@ namespace DDDSJ4.Parsers
                     if (currentVertex != null)
                     {
                         stringBuilder
+                            .Append("\t\t")
                             .Append(@"<vertex id=""")
                             .Append(currentVertex.Id)
                             .Append(@""" x=""")
@@ -145,6 +147,7 @@ namespace DDDSJ4.Parsers
                 {
                     ObjFace currentFace = batch[i].Faces[j];
                     stringBuilder
+                        .Append("\t\t")
                         .Append(@"<face v1=""")
                         .Append(currentFace.V1)
                         .Append(@""" v2=""")
@@ -155,7 +158,7 @@ namespace DDDSJ4.Parsers
                         .Append("\n");
                 }
 
-                stringBuilder.Append(@"</batch>").Append("\n");
+                stringBuilder.Append("\t").Append(@"</batch>").Append("\n");
             }
 
             stringBuilder
