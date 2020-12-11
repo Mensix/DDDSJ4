@@ -76,9 +76,7 @@ namespace DDDSJ4.Parsers
             {
                 for (int j = 0; j < batches[i].Faces.Count; j++)
                 {
-                    bool isTripleFace = batches[i].Faces[j].V1.Contains("/");
-
-                    if (!isTripleFace)
+                    if (batches[i].Faces[j].Type != ObjFaceType.NORMAL_INDICE)
                     {
                         batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V1));
                         batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V2));
@@ -86,16 +84,9 @@ namespace DDDSJ4.Parsers
                     }
                     else
                     {
-                        string[] firstFace = batches[i].Faces[j].V1.Split("/");
-                        string[] secondFace = batches[i].Faces[j].V2.Split("/");
-                        string[] thirdFace = batches[i].Faces[j].V3.Split("/");
-
-                        for (int k = 0; k < firstFace.Length; k++)
-                        {
-                            batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == firstFace[k]));
-                            batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == secondFace[k]));
-                            batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == thirdFace[k]));
-                        }
+                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V1.Split("/")[0]));
+                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V2.Split("/")[0]));
+                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V3.Split("/")[0]));
                     }
                 }
             }
