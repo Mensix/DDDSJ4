@@ -45,9 +45,10 @@ namespace DDDSJ4.Parsers
                         Console.WriteLine("! Material diffuse color wasn't found, using 0xFFFFFF color");
                     }
 
+                    Random random = new Random();
                     batches.Add(new ObjBatch
                     {
-                        Id = line[1],
+                        Id = $"{line[1]}_{random.NextDouble()}",
                         Diffuse = foundDiffuse ? materials.First(x => x.Name == line[1]).Diffuse : "0xFFFFFF",
                         Vertices = new List<ObjVertex>(),
                         Faces = new List<ObjFace>()
