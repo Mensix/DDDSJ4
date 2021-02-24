@@ -1,12 +1,11 @@
+using System.Drawing;
 using System.Xml;
-using System.Text;
 using System.Linq;
 using System;
 using System.Collections.Generic;
 using DDDSJ4.Models;
 using DDDSJ4.Interfaces;
-using System.Threading.Tasks;
-
+using Console = Colorful.Console;
 namespace DDDSJ4.Parsers
 {
     public class ParseObj : IParse
@@ -16,6 +15,7 @@ namespace DDDSJ4.Parsers
             List<ObjBatch> batches = new();
             List<ObjVertex> vertices = new();
             List<ObjFace> faces = new();
+            bool wasErrorishFace = false;
             int index = 1;
 
             for (int i = 0; i < input.Count; i++)
@@ -26,7 +26,9 @@ namespace DDDSJ4.Parsers
                 {
                     if (line.Count != 4)
                     {
-                        Console.WriteLine("! Vertex definition must contain exactly three coordinates");
+                        Console.Write("ERROR: ", Color.Red);
+                        Console.Write("Vertex definition must contain exactly three values\n");
+                        Environment.Exit(1);
                     }
 
                     vertices.Add(new ObjVertex
@@ -44,10 +46,11 @@ namespace DDDSJ4.Parsers
                     bool foundDiffuse = materials.Where(x => x.Name == line[1]).ToList().Count > 0;
                     if (!foundDiffuse)
                     {
-                        Console.WriteLine("! Material diffuse color wasn't found, using 0xFFFFFF color");
+                        Console.Write("WARNING: ", Color.Gold);
+                        Console.Write("Material diffuse wasn't found, using 0xFFFFFF color...\n");
                     }
 
-                    Random random = new Random();
+                    Random random = new();
                     batches.Add(new ObjBatch
                     {
                         Id = $"{line[1]}_{random.NextDouble()}",
@@ -59,9 +62,11 @@ namespace DDDSJ4.Parsers
 
                 if (line[0].StartsWith("f"))
                 {
-                    if (line.Count != 4)
+                    if (line.Count != 4 && !wasErrorishFace)
                     {
-                        Console.WriteLine("! Face definition must contain exactly three vertices identifications, triangulate your model ie. in Blender");
+                        wasErrorishFace = true;
+                        Console.Write("WARNING: ", Color.Gold);
+                        Console.Write("Face definition must contain exactly three vertices identifications, triangulate your model ie. in Blender\n");
                     }
 
                     batches[^1].Faces.Add(new ObjFace
