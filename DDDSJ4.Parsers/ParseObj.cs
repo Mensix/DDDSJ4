@@ -109,6 +109,7 @@ namespace DDDSJ4.Parsers
                 OmitXmlDeclaration = true,
             });
             xmlWriter.WriteStartDocument();
+            xmlWriter.WriteComment("To place your generated model as you want, go to the last line of the code and modify model-instance element attributes.");
             xmlWriter.WriteStartElement("model");
             xmlWriter.WriteAttributeString("id", "model");
 
@@ -150,6 +151,8 @@ namespace DDDSJ4.Parsers
             }
 
             xmlWriter.WriteEndElement();
+            xmlWriter.WriteComment("<model-instance id=\"model\" refx=\"inrun\" refy=\"inrun-top\" x=\"0\" y=\"0\" z=\"0\" />");
+
             xmlWriter.WriteEndDocument();
             xmlWriter.Close();
         }
