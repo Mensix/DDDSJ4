@@ -1,9 +1,11 @@
+using System.Xml;
 using System.Text;
 using System.Linq;
 using System;
 using System.Collections.Generic;
 using DDDSJ4.Models;
 using DDDSJ4.Interfaces;
+using System.Threading.Tasks;
 
 namespace DDDSJ4.Parsers
 {
@@ -99,66 +101,57 @@ namespace DDDSJ4.Parsers
             return batches;
         }
 
-        public string Generate(List<ObjBatch> batch)
+        public void Generate(List<ObjBatch> batch, string fileName)
         {
-            StringBuilder stringBuilder = new(@"<3dmodel id=""model"">");
-            stringBuilder.Append("\n");
+            XmlWriter xmlWriter = XmlWriter.Create(fileName, new XmlWriterSettings
+            {
+                Indent = true,
+                OmitXmlDeclaration = true,
+            });
+            xmlWriter.WriteStartDocument();
+            xmlWriter.WriteStartElement("model");
+            xmlWriter.WriteAttributeString("id", "model");
 
             for (int i = 0; i < batch.Count; i++)
             {
-                stringBuilder
-                    .Append("\t")
-                    .Append(@"<batch id=""")
-                    .Append(batch[i].Id)
-                    .Append(@""" texture1=""Textures\concrete5.png"" material=""Materials\material1.xml"" fvf=""322"" order=""0"">")
-                    .Append("\n");
+                xmlWriter.WriteStartElement("batch");
+                xmlWriter.WriteAttributeString("id", batch[i].Id);
+                xmlWriter.WriteAttributeString("texture1", "Textures\\concrete5.png");
+                xmlWriter.WriteAttributeString("material", "Materials\\material1.xml");
+                xmlWriter.WriteAttributeString("fvf", "322");
+                xmlWriter.WriteAttributeString("order", "0");
 
                 for (int j = 0; j < batch[i].Vertices.Count; j++)
                 {
                     ObjVertex currentVertex = batch[i].Vertices[j];
                     if (currentVertex != null)
                     {
-                        stringBuilder
-                            .Append("\t\t")
-                            .Append(@"<vertex id=""")
-                            .Append(currentVertex.Id)
-                            .Append(@""" x=""")
-                            .Append(currentVertex.X)
-                            .Append(@""" y=""")
-                            .Append(currentVertex.Y)
-                            .Append(@""" z=""")
-                            .Append(currentVertex.Z)
-                            .Append(@""" diffuse=""")
-                            .Append(batch[i].Diffuse)
-                            .Append(@""" />")
-                            .Append("\n");
+                        xmlWriter.WriteStartElement("vertex");
+                        xmlWriter.WriteAttributeString("id", currentVertex.Id.ToString());
+                        xmlWriter.WriteAttributeString("x", currentVertex.X);
+                        xmlWriter.WriteAttributeString("y", currentVertex.Y);
+                        xmlWriter.WriteAttributeString("z", currentVertex.Z);
+                        xmlWriter.WriteAttributeString("diffuse", batch[i].Diffuse);
+                        xmlWriter.WriteEndElement();
                     }
                 }
 
                 for (int j = 0; j < batch[i].Faces.Count; j++)
                 {
                     ObjFace currentFace = batch[i].Faces[j];
-                    stringBuilder
-                        .Append("\t\t")
-                        .Append(@"<face v1=""")
-                        .Append(currentFace.V1)
-                        .Append(@""" v2=""")
-                        .Append(currentFace.V2)
-                        .Append(@""" v3=""")
-                        .Append(currentFace.V3)
-                        .Append(@""" />")
-                        .Append("\n");
+                    xmlWriter.WriteStartElement("face");
+                    xmlWriter.WriteAttributeString("v1", currentFace.V1);
+                    xmlWriter.WriteAttributeString("v2", currentFace.V2);
+                    xmlWriter.WriteAttributeString("v3", currentFace.V3);
+                    xmlWriter.WriteEndElement();
                 }
 
-                stringBuilder.Append("\t").Append(@"</batch>").Append("\n");
+                xmlWriter.WriteEndElement();
             }
 
-            stringBuilder
-                .Append(@"</3dmodel>")
-                .Append("\n")
-                .Append(@"<3dmodel-instance id=""model"" refx=""inrun"" refy=""inrun-top"" x=""0"" y=""0"" z=""0""/>");
-
-            return stringBuilder.ToString();
+            xmlWriter.WriteEndElement();
+            xmlWriter.WriteEndDocument();
+            xmlWriter.Close();
         }
 
         public ObjFaceType GetFaceType(string face)

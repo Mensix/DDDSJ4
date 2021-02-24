@@ -46,7 +46,7 @@ namespace DDDSJ4
             Console.WriteLine("! Parsing .obj file");
             List<ObjBatch> batch = parseObj.Parse(objFileContent, materials);
             Console.WriteLine("! Writing XML file");
-            File.WriteAllText($"{args[0].Split(".")[0]}.xml", parseObj.Generate(batch));
+            parseObj.Generate(batch, $"{args[0].Split(".")[0]}.xml");
             Console.WriteLine($"! XML file was written to {args[0].Split(".")[0]}.xml");
         }
     }
