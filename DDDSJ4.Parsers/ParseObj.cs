@@ -15,8 +15,16 @@ namespace DDDSJ4.Parsers
             List<ObjBatch> batches = new();
             List<ObjVertex> vertices = new();
             List<ObjFace> faces = new();
-            bool wasErrorishFace = false;
+            bool wasFaceInvalid = false;
             int index = 1;
+
+            batches.Add(new ObjBatch
+            {
+                Id = "0",
+                Diffuse = "0xFFFFFF",
+                Faces = new List<ObjFace>(),
+                Vertices = new List<ObjVertex>()
+            });
 
             for (int i = 0; i < input.Count; i++)
             {
@@ -43,18 +51,18 @@ namespace DDDSJ4.Parsers
 
                 if (line[0].StartsWith("usemtl"))
                 {
-                    bool foundDiffuse = materials.Where(x => x.Name == line[1]).ToList().Count > 0;
-                    if (!foundDiffuse)
+                    bool wasDiffuseFound = materials.Where(x => x.Name == line[1]).ToList().Count > 0;
+                    if (!wasDiffuseFound)
                     {
                         Console.Write("WARNING: ", Color.Gold);
-                        Console.Write("Material diffuse wasn't found, using 0xFFFFFF color...\n");
+                        Console.Write($"Material {line[1]} diffuse wasn't found, using 0xFFFFFF color...\n");
                     }
 
                     Random random = new();
                     batches.Add(new ObjBatch
                     {
                         Id = $"{line[1]}_{random.NextDouble()}",
-                        Diffuse = foundDiffuse ? materials.First(x => x.Name == line[1]).Diffuse : "0xFFFFFF",
+                        Diffuse = wasDiffuseFound ? materials.Find(x => x.Name == line[1]).Diffuse : "0xFFFFFF",
                         Vertices = new List<ObjVertex>(),
                         Faces = new List<ObjFace>()
                     });
@@ -62,9 +70,9 @@ namespace DDDSJ4.Parsers
 
                 if (line[0].StartsWith("f"))
                 {
-                    if (line.Count != 4 && !wasErrorishFace)
+                    if (line.Count != 4 && !wasFaceInvalid)
                     {
-                        wasErrorishFace = true;
+                        wasFaceInvalid = true;
                         Console.Write("WARNING: ", Color.Gold);
                         Console.Write("Face definition must contain exactly three vertices identifications, triangulate your model ie. in Blender\n");
                     }
@@ -83,17 +91,18 @@ namespace DDDSJ4.Parsers
             {
                 for (int j = 0; j < batches[i].Faces.Count; j++)
                 {
-                    if (batches[i].Faces[j].Type != ObjFaceType.NORMAL_INDICE)
+                    ObjFace currentFace = batches[i].Faces[j];
+                    if (currentFace.Type != ObjFaceType.NORMAL_INDICE)
                     {
-                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V1));
-                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V2));
-                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V3));
+                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == currentFace.V1));
+                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == currentFace.V2));
+                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == currentFace.V3));
                     }
                     else
                     {
-                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V1.Split("/")[0]));
-                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V2.Split("/")[0]));
-                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == batches[i].Faces[j].V3.Split("/")[0]));
+                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == currentFace.V1.Split("/")[0]));
+                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == currentFace.V2.Split("/")[0]));
+                        batches[i].Vertices.Add(vertices.Find(x => x.Id.ToString() == currentFace.V3.Split("/")[0]));
                     }
                 }
             }

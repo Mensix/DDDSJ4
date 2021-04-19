@@ -16,20 +16,13 @@ namespace DDDSJ4
             List<string> objFileContent = new();
             List<string> mtlFileContent = new();
 
-            if (args.Length != 2)
-            {
-                Console.Write("ERROR: ", Color.Red);
-                Console.Write("Not enough arguments were passed!");
-                Environment.Exit(1);
-            }
-
             Console.Write("INFO: ", Color.Blue);
             Console.Write("Reading files...\n");
 
             try
             {
                 objFileContent = File.ReadAllLines(args[0]).ToList();
-                mtlFileContent = File.ReadAllLines(args[1]).ToList();
+                if(args.ElementAtOrDefault(1) != null) mtlFileContent = File.ReadAllLines(args[1]).ToList();
             }
             catch (FileNotFoundException)
             {
