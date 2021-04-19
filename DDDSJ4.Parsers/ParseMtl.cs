@@ -10,13 +10,13 @@ namespace DDDSJ4.Parsers
 {
     public class ParseMtl
     {
-        public List<MtlMaterial> Parse(List<string> input)
+        public List<MtlMaterial> Parse(string[] input)
         {
             List<MtlMaterial> materials = new();
 
-            for (int i = 0; i < input.Count; i++)
+            for (int i = 0; i < input.Length; i++)
             {
-                List<string> line = input[i].Split(" ").ToList();
+                string[] line = input[i].Split(" ");
                 if (line[0] == "newmtl")
                 {
                     materials.Add(new MtlMaterial

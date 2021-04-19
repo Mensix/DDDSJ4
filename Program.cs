@@ -1,55 +1,44 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.IO;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
-using Console = Colorful.Console;
 using DDDSJ4.Parsers;
 using DDDSJ4.Models;
+using DDDSJ4.Utilities;
 
 namespace DDDSJ4
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            List<string> objFileContent = new();
-            List<string> mtlFileContent = new();
-
-            Console.Write("INFO: ", Color.Blue);
-            Console.Write("Reading files...\n");
-
-            try
-            {
-                objFileContent = File.ReadAllLines(args[0]).ToList();
-                if(args.ElementAtOrDefault(1) != null) mtlFileContent = File.ReadAllLines(args[1]).ToList();
-            }
-            catch (FileNotFoundException)
-            {
-                Console.Write("ERROR: ", Color.Red);
-                Console.Write($"Files {args[0]} and/or {args[1]} weren't found!");
-                Environment.Exit(1);
-            }
-
-            Console.Write("INFO: ", Color.Blue);
-            Console.Write("Invoking parsers...\n");
-
+            string[] objFileContent = Array.Empty<string>();
+            string[] mtlFileContent = Array.Empty<string>();
             ParseMtl parseMtl = new();
-            Console.Write("INFO: ", Color.Blue);
-            Console.Write("Parsing materials...\n");
-            List<MtlMaterial> materials = parseMtl.Parse(mtlFileContent);
-
             ParseObj parseObj = new();
-            Console.Write("INFO: ", Color.Blue);
-            Console.Write("Parsing obj...\n");
+
+            Logger.LogInfo("Reading files...");
+            string[] objAndMtlFiles = Directory
+                 .GetFiles(Environment.CurrentDirectory, "*.*", SearchOption.TopDirectoryOnly)
+                 .Select(x => Path.GetFileName(x))
+                 .Where(x => x.Split(".").Length > 1)
+                 .GroupBy(x => x.Split(".")[0])
+                 .First(x => x.Any(y => y.Contains(".obj") || y.Contains(".mtl")))
+                 .ToArray();
+
+            string outputFileName = objAndMtlFiles[0].Split(".")[0];
+            objFileContent = File.ReadAllLines(objAndMtlFiles.First(x => x.EndsWith(".obj")));
+            if(objAndMtlFiles.Any(x => x.EndsWith(".mtl"))) mtlFileContent = File.ReadAllLines(objAndMtlFiles.First(x => x.EndsWith(".mtl")));
+
+            Logger.LogInfo("Invoking parsers...");
+            Logger.LogInfo("Parsing materials...");
+            List<MtlMaterial> materials = parseMtl.Parse(mtlFileContent);
+            Logger.LogInfo("Parsing obj...");
             List<ObjBatch> batches = parseObj.Parse(objFileContent, materials);
 
-            Console.Write("INFO: ", Color.Blue);
-            Console.Write("Writing XML file...\n");
-            parseObj.Generate(batches, $"{args[0].Split(".")[0]}.xml");
-
-            Console.Write("INFO: ", Color.Blue);
-            Console.Write($"XML file was written to {args[0].Split(".")[0]}.xml");
+            Logger.LogInfo("Writing XML file...");
+            parseObj.Generate(batches, $"{outputFileName}.xml");
+            Logger.LogInfo($"XML file was written to {outputFileName}.xml");
             Environment.Exit(0);
         }
     }

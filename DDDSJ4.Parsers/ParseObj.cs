@@ -1,16 +1,16 @@
-using System.Drawing;
 using System.Xml;
 using System.Linq;
 using System;
 using System.Collections.Generic;
 using DDDSJ4.Models;
 using DDDSJ4.Interfaces;
-using Console = Colorful.Console;
+using DDDSJ4.Utilities;
+
 namespace DDDSJ4.Parsers
 {
     public class ParseObj : IParse
     {
-        public List<ObjBatch> Parse(List<string> input, List<MtlMaterial> materials)
+        public List<ObjBatch> Parse(string[] input, List<MtlMaterial> materials)
         {
             List<ObjBatch> batches = new();
             List<ObjVertex> vertices = new();
@@ -26,16 +26,15 @@ namespace DDDSJ4.Parsers
                 Vertices = new List<ObjVertex>()
             });
 
-            for (int i = 0; i < input.Count; i++)
+            for (int i = 0; i < input.Length; i++)
             {
-                List<string> line = input[i].Split(" ").ToList();
+                string[] line = input[i].Split(" ");
 
                 if (line[0].StartsWith("v") && line[0].EndsWith("v"))
                 {
-                    if (line.Count != 4)
+                    if (line.Length != 4)
                     {
-                        Console.Write("ERROR: ", Color.Red);
-                        Console.Write("Vertex definition must contain exactly three values\n");
+                        Logger.LogError("Vertex definition must contain exactly three values\n");
                         Environment.Exit(1);
                     }
 
@@ -51,12 +50,8 @@ namespace DDDSJ4.Parsers
 
                 if (line[0].StartsWith("usemtl"))
                 {
-                    bool wasDiffuseFound = materials.Where(x => x.Name == line[1]).ToList().Count > 0;
-                    if (!wasDiffuseFound)
-                    {
-                        Console.Write("WARNING: ", Color.Gold);
-                        Console.Write($"Material {line[1]} diffuse wasn't found, using 0xFFFFFF color...\n");
-                    }
+                    bool wasDiffuseFound = materials.Where(x => x.Name == line[1]).ToArray().Length > 0;
+                    if (!wasDiffuseFound) Logger.LogWarn($"Material {line[1]} diffuse wasn't found, using 0xFFFFFF color...");
 
                     Random random = new();
                     batches.Add(new ObjBatch
@@ -70,11 +65,10 @@ namespace DDDSJ4.Parsers
 
                 if (line[0].StartsWith("f"))
                 {
-                    if (line.Count != 4 && !wasFaceInvalid)
+                    if (line.Length != 4 && !wasFaceInvalid)
                     {
                         wasFaceInvalid = true;
-                        Console.Write("WARNING: ", Color.Gold);
-                        Console.Write("Face definition must contain exactly three vertices identifications, triangulate your model ie. in Blender\n");
+                        Logger.LogWarn("Face definition must contain exactly three vertices identifications, triangulate your model ie. in Blender");
                     }
 
                     batches[^1].Faces.Add(new ObjFace
