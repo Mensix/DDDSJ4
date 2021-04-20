@@ -35,7 +35,6 @@ namespace DDDSJ4.Parsers
                     if (line.Length != 4)
                     {
                         Logger.LogError("Vertex definition must contain exactly three values\n");
-                        Environment.Exit(1);
                     }
 
                     vertices.Add(new ObjVertex

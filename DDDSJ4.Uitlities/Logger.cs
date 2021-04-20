@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using Console = Colorful.Console;
 
@@ -21,6 +22,7 @@ namespace DDDSJ4.Utilities
         {
             Console.Write("ERROR: ", Color.Red);
             Console.WriteLine(input);
+            if (Console.ReadKey().Key == ConsoleKey.Enter) Environment.Exit(0);
         }
     }
 }
