@@ -28,7 +28,7 @@ namespace DDDSJ4
 
             string outputFileName = objAndMtlFiles[0].Split(".")[0];
             objFileContent = File.ReadAllLines(objAndMtlFiles.First(x => x.EndsWith(".obj")));
-            if(objAndMtlFiles.Any(x => x.EndsWith(".mtl"))) mtlFileContent = File.ReadAllLines(objAndMtlFiles.First(x => x.EndsWith(".mtl")));
+            if (objAndMtlFiles.Any(x => x.EndsWith(".mtl"))) mtlFileContent = File.ReadAllLines(objAndMtlFiles.First(x => x.EndsWith(".mtl")));
 
             Logger.LogInfo("Invoking parsers...");
             Logger.LogInfo("Parsing materials...");
@@ -39,7 +39,9 @@ namespace DDDSJ4
             Logger.LogInfo("Writing XML file...");
             parseObj.Generate(batches, $"{outputFileName}.xml");
             Logger.LogInfo($"XML file was written to {outputFileName}.xml");
-            Environment.Exit(0);
+
+            Logger.LogInfo("Press Enter to exit the program!");
+            if (Console.ReadKey().Key == ConsoleKey.Enter) Environment.Exit(0);
         }
     }
 }
