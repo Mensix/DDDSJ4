@@ -11,3 +11,5 @@ The small tool to generate DSJ4 compatible XML files from input .obj and .mtl fi
 ## License
 
 [MIT](https://opensource.org/licenses/MIT)
+
+The favicon.ico file is a Jussi Koskela work.
