@@ -28,7 +28,7 @@ namespace DDDSJ4.Parsers
 
             for (int i = 0; i < input.Length; i++)
             {
-                string[] line = input[i].Split(" ");
+                string[] line = input[i].Trim().Split(" ");
 
                 if (line[0].StartsWith("v") && line[0].EndsWith("v"))
                 {
