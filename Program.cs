@@ -18,7 +18,7 @@ namespace DDDSJ4
             ParseMtl parseMtl = new();
             ParseObj parseObj = new();
 
-            Logger.LogInfo("Reading files...");
+            Logger.LogInfo("Reading files");
 
             try
             {
@@ -32,7 +32,7 @@ namespace DDDSJ4
             }
             catch
             {
-                Logger.LogError("No .obj and/or .mtl files were found!");
+                Logger.LogError("No .obj and/or .mtl files were found");
                 Console.ReadKey();
             }
 
@@ -41,15 +41,15 @@ namespace DDDSJ4
             objFileContent = File.ReadAllLines(objAndMtlFiles.First(x => x.EndsWith(".obj")));
             if(objAndMtlFiles.Any(x => x.EndsWith(".mtl"))) mtlFileContent = File.ReadAllLines(objAndMtlFiles.First(x => x.EndsWith(".mtl")));
 
-            Logger.LogInfo("Invoking parsers...");
-            Logger.LogInfo("Parsing materials...");
+            Logger.LogInfo("Invoking parsers");
+            Logger.LogInfo("Parsing .mtl file");
             List<MtlMaterial> materials = parseMtl.Parse(mtlFileContent);
-            Logger.LogInfo("Parsing obj...");
+            Logger.LogInfo("Parsing .obj file");
             List<ObjBatch> batches = parseObj.Parse(objFileContent, materials);
 
-            Logger.LogInfo("Writing XML file...");
+            Logger.LogInfo("Writing .xml file");
             parseObj.Generate(batches, $"{usedFileName}.xml");
-            Logger.LogInfo($"XML file was written to {usedFileName}.xml");
+            Logger.LogInfo($".xml file was written to {usedFileName}.xml");
 
             Logger.LogInfo("Press any key to exit the program...");
             Console.ReadKey();

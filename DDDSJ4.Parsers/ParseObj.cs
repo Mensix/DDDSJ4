@@ -15,7 +15,6 @@ namespace DDDSJ4.Parsers
             List<ObjBatch> batches = new();
             List<ObjVertex> vertices = new();
             List<ObjFace> faces = new();
-            bool wasFaceInvalid = false;
             int index = 1;
 
             batches.Add(new ObjBatch
@@ -34,7 +33,7 @@ namespace DDDSJ4.Parsers
                 {
                     if (line.Length != 4)
                     {
-                        Logger.LogError("Vertex definition must contain exactly three values\n");
+                        Logger.LogError($"Invalid vertex definition found, line {i}\n");
                     }
 
                     vertices.Add(new ObjVertex
@@ -50,7 +49,7 @@ namespace DDDSJ4.Parsers
                 if (line[0].StartsWith("usemtl"))
                 {
                     bool wasDiffuseFound = materials.Where(x => x.Name == line[1]).ToArray().Length > 0;
-                    if (!wasDiffuseFound) Logger.LogWarn($"Material {line[1]} diffuse wasn't found, using 0xFFFFFF color...");
+                    if (!wasDiffuseFound) Logger.LogWarn($"Material {line[1]} diffuse wasn't found, using 0xFFFFFF color");
 
                     Random random = new();
                     batches.Add(new ObjBatch
@@ -64,10 +63,9 @@ namespace DDDSJ4.Parsers
 
                 if (line[0].StartsWith("f"))
                 {
-                    if (line.Length != 4 && !wasFaceInvalid)
+                    if (line.Length != 4)
                     {
-                        wasFaceInvalid = true;
-                        Logger.LogWarn("Face definition must contain exactly three vertices identifications, triangulate your model ie. in Blender");
+                        Logger.LogWarn($"Face definition must contain exactly three vertices identifications, triangulate your model ie. in Blender, line {i + 1}");
                     }
 
                     batches[^1].Faces.Add(new ObjFace
