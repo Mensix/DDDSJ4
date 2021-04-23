@@ -121,6 +121,7 @@ namespace DDDSJ4.Parsers
             {
                 xmlWriter.WriteStartElement("batch");
                 xmlWriter.WriteAttributeString("id", batch[i].Id);
+                xmlWriter.WriteAttributeString("zbias", "2");
                 xmlWriter.WriteAttributeString("texture1", "Textures\\concrete5.png");
                 xmlWriter.WriteAttributeString("material", "Materials\\material1.xml");
                 xmlWriter.WriteAttributeString("fvf", "322");
@@ -157,8 +158,8 @@ namespace DDDSJ4.Parsers
             xmlWriter.WriteEndElement();
             xmlWriter.WriteStartElement("model-instance");
             xmlWriter.WriteAttributeString("id", "model");
-            xmlWriter.WriteAttributeString("refx", "inrun");
-            xmlWriter.WriteAttributeString("refy", "inrun-top");
+            xmlWriter.WriteAttributeString("refx", "dhill");
+            xmlWriter.WriteAttributeString("refy", "dhill-top");
             xmlWriter.WriteAttributeString("x", "0");
             xmlWriter.WriteAttributeString("y", "0");
             xmlWriter.WriteAttributeString("z", "0");
