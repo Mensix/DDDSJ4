@@ -1,9 +1,7 @@
 using System.Globalization;
 using System;
-using System.Net;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using DDDSJ4.Models;
 
 namespace DDDSJ4.Parsers
@@ -38,7 +36,7 @@ namespace DDDSJ4.Parsers
             return materials;
         }
 
-        public static string RgbToHex(int r, int g, int b)
+        private static string RgbToHex(int r, int g, int b)
         {
             Color color = Color.FromArgb(r, g, b);
             return $"0x{color.R:X2}{color.G:X2}{color.B:X2}";
