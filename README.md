@@ -6,10 +6,10 @@ The small tool to generate DSJ4 compatible XML files from input .obj and .mtl fi
 
 1. Clone this repository and unpack it
 2. Run ```cmd.exe``` in this directory
-3. Run ```dotnet run <file_name.obj> <file_name.mtl>```
+3. Run ```dotnet run```, the program will automatically detect matching .obj and .mtl files
 
 ## License
 
 [MIT](https://opensource.org/licenses/MIT)
 
-The favicon.ico file is a Jussi Koskela work.
+The favicon.ico file is Jussi Koskela work.
